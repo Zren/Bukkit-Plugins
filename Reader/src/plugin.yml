@@ -1,0 +1,10 @@
+name: Reader
+main: com.shade.bukkit.reader.Reader
+version: 1.4.0
+commands:
+    readeradd:
+        description: Add a line at the end of a file.
+        usage: |
+               /<COMMAND> [file] [line . . . ]
+    readerreload:
+        description: Reload all files.
