@@ -1,6 +1,6 @@
 package ca.xshade.questionmanager;
 
-public abstract class QuestionTask implements Runnable {
+public abstract class QuestionTask extends OptionTask {
 	protected Question question;
 	
 	public Question getQuestion() {

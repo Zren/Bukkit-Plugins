@@ -21,14 +21,17 @@ public class QuestionerPlayerListener extends PlayerListener {
 		if (event.isCancelled())
 			return;
 		
-		String command = event.getMessage();
+		String command = event.getMessage().substring(1);
+		System.out.println(command);
 		Player player = event.getPlayer();
 		
 		try {
 			Runnable reaction = questionManager.answerFirstQuestion(player.getName(), command);
+			System.out.println("REACTING!");
 			int id = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, reaction);
 			if (id == -1)
 				plugin.sendErrorMsg("Could not schedule reaction to " + player.getName() + "'s question.");
+			event.setCancelled(true);
 		} catch (InvalidOptionException e) {
 		} catch (Exception e) {
 		}
