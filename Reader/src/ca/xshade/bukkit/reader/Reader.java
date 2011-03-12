@@ -75,7 +75,7 @@ public class Reader extends JavaPlugin {
     }
 
     private void registerEvents() {
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, playerListener, Priority.Normal, this);
     }
     
     @Override
@@ -111,7 +111,7 @@ public class Reader extends JavaPlugin {
     }
     
     private final PlayerListener playerListener = new PlayerListener() {
-    	public void onPlayerCommand(PlayerChatEvent event) {
+    	public void onPlayerCommandPreprocess(PlayerChatEvent event) {
     		if (event.isCancelled())
             	return;
             

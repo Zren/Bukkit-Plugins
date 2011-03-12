@@ -6,7 +6,7 @@ public class Option {
 	
 	// What is displayed when asked the question.
 	// A null value will instead display what is in the variable command.
-	protected String fullOption;
+	protected String optionDescription;
 	
 	// The reaction caused when the player chooses this option
 	protected Runnable reaction;
@@ -18,16 +18,20 @@ public class Option {
 			((OptionTask) reaction).setOption(this);
 	}
 	
-	public Option (String command, Runnable reaction, String fullOption) {
+	public Option (String command, Runnable reaction, String optionDescription) {
 		this(command, reaction);
-		this.fullOption = fullOption;
+		this.optionDescription = optionDescription;
+	}
+	
+	public String getOptionDescription() {
+		return optionDescription;
 	}
 	
 	public String getOptionString() {
-		if (fullOption == null)
-			return command;
+		if (hasDescription())
+			return optionDescription;
 		else
-			return fullOption;
+			return command;
 	}
 
 	public boolean isCommand(String command) {
@@ -36,5 +40,14 @@ public class Option {
 	
 	public Runnable getReaction() {
 		return reaction;
+	}
+	
+	@Override
+	public String toString() {
+		return command;
+	}
+
+	public boolean hasDescription() {
+		return optionDescription != null;
 	}
 }

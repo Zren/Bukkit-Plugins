@@ -1,13 +1,13 @@
 package ca.xshade.questionmanager;
 
 public abstract class QuestionTask extends OptionTask {
-	protected Question question;
+	protected AbstractQuestion question;
 	
-	public Question getQuestion() {
+	public AbstractQuestion getQuestion() {
 		return question;
 	}
 
-	void setQuestion(Question question) {
+	void setQuestion(AbstractQuestion question) {
 		this.question = question;
 	}
 	

@@ -14,5 +14,4 @@ public class PollQuestion extends Question {
 	public PollQuestion(Poll poll, String voter, Question question) {
 		this(poll, voter, question, false);
 	}
-
 }

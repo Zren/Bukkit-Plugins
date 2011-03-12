@@ -5,7 +5,7 @@ public class PollTask extends QuestionTask {
 	
 	@Override
 	public void run() {
-		poll.voteFor(getQuestion().getTarget(), getOption());
+		poll.voteFor(((Question)getQuestion()).getTarget(), getOption());
 		poll.checkEnd();
 	}
 
