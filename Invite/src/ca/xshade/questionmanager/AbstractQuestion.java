@@ -1,5 +1,6 @@
 package ca.xshade.questionmanager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractQuestion {
@@ -14,6 +15,14 @@ public abstract class AbstractQuestion {
 	
 	// Will this question be deleted when session ends?
 	protected boolean persistance = false;
+	
+	public void initialize(String question, List<Option> options) {
+		this.question = question;
+		this.options = new ArrayList<Option>(options);
+		for (Option option : options)
+			if (option.reaction instanceof QuestionTask)
+				((QuestionTask) option.reaction).setQuestion(this);
+	}
 	
 	/**
 	 * Attempt to get the option specified by the command.

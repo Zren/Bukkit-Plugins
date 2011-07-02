@@ -1,0 +1,1 @@
+Make sure names are case-insensitive.

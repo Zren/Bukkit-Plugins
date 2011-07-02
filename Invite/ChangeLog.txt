@@ -1,0 +1,6 @@
+v0.1:
+	Initial release.
+v0.2:
+	Changed alias command /q to /que to prevent conflicts with other plugins.
+v0.3:
+	Removed debug output.

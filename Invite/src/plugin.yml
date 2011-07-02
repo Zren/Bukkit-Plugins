@@ -1,9 +1,10 @@
 name: Questioner
 main: ca.xshade.bukkit.questioner.Questioner
-version: 0.1
+version: 0.3
 author: Shade
 website: http://towny.xshade.ca
 description: Ask questions to players. Including polling.
 commands:
-    q:
+    question:
         description: Master command for questions.
+        aliases: [que]

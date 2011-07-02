@@ -1,6 +1,5 @@
 package ca.xshade.questionmanager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,11 +34,7 @@ public class LinkedQuestion extends AbstractQuestion {
 	public LinkedQuestion (int id, List<String> targets, String question, List<Option> options) {
 		this.id = id;
 		this.targets = targets;
-		this.question = question;
-		this.options = new ArrayList<Option>(options);
-		for (Option option : options)
-			if (option.reaction instanceof QuestionTask)
-				((QuestionTask) option.reaction).setQuestion(this);
+		initialize(question, options);
 	}
 	
 	/**

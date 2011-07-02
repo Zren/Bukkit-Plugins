@@ -13,9 +13,7 @@
     <selectedElements exportClassFiles="false" exportJavaFiles="false" exportOutputFolder="true">
         <javaElement handleIdentifier="=Util/src"/>
         <javaElement handleIdentifier="=Questioner/src"/>
-        <file path="/Questioner/.project"/>
         <file path="/Util/.classpath"/>
-        <file path="/Questioner/.classpath"/>
         <file path="/Util/.project"/>
     </selectedElements>
 </jardesc>

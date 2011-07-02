@@ -27,8 +27,8 @@ import ca.xshade.questionmanager.Question;
 import ca.xshade.questionmanager.QuestionFormatter;
 import ca.xshade.questionmanager.QuestionManager;
 import ca.xshade.questionmanager.QuestionTask;
+import ca.xshade.util.StringMgmt;
 
-import com.shade.util.StringMgmt;
 
 public class Questioner extends JavaPlugin {
 	protected QuestionManager questionManager;
@@ -37,18 +37,18 @@ public class Questioner extends JavaPlugin {
 	private List<Option> currentOptions = new ArrayList<Option>();
 	private List<String> currentTargets = new ArrayList<String>();
 	private int questionsPerPage = 5;
-	private String questionFormat = ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "%d" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_GREEN + "%s";
-	private String optionFormat = ChatColor.GREEN + "      /%s";
+	private String questionFormat = ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "%s" + ChatColor.DARK_GRAY + "] " + ChatColor.DARK_GREEN + "%s";
+	private String optionFormat = ChatColor.GREEN + "          /%s";
 	private String optionEntendedFormat = ChatColor.YELLOW + " : %s";
 	private String listFooterFormat = ChatColor.DARK_GRAY + " ---- " + ChatColor.GRAY + "Page: %d/%d " + ChatColor.DARK_GRAY + "~" + ChatColor.GRAY + " Total Questions: %d";
-
+	
 	public static void main(String[] args) {
 		Questioner questioner = new Questioner();
 		questioner.onEnable();
 		
 		{ // Insert first question
 			List<Option> options = new ArrayList<Option>();
-			options.add(new Option("yes", new QuestionTask() {
+			options.add(new Option("yes maybe", new QuestionTask() {
 				public void run() {
 					System.out.println(((Question)getQuestion()).getTarget() + " recieved fries!");
 				}
@@ -150,7 +150,7 @@ public class Questioner extends JavaPlugin {
 					do {
 						Scanner input = new Scanner(System.in);
 						try {
-							question.getOption(input.next()).getReaction().run();
+							question.getOption(input.nextLine()).getReaction().run();
 							questioner.getQuestionManager().removeFirstQuestion("You");
 							question = null;
 						} catch (InvalidOptionException e) {
@@ -180,6 +180,7 @@ public class Questioner extends JavaPlugin {
 	public void onDisable() {
 		playerListener = null;
 		questionManager = null;
+		System.out.println("[Questioner] v"+getDescription().getVersion()+" - Disabled");
 	}
 
 	@Override
@@ -190,11 +191,24 @@ public class Questioner extends JavaPlugin {
 		// Bukkit Server
 		if (getServer() != null) {
 			getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, playerListener, Priority.Low, this);
+			System.out.println("[Questioner] v"+getDescription().getVersion()+" - Enabled");
 		}
 	}
 
 	public QuestionManager getQuestionManager() {
 		return questionManager;
+	}
+	
+	public void appendQuestion(Question question) throws Exception {
+		for (Option option : question.getOptions())
+			if (option.getReaction() instanceof BukkitQuestionTask)
+				((BukkitQuestionTask)option.getReaction()).setServer(getServer());
+		getQuestionManager().appendQuestion(question);
+		
+		Player player = getServer().getPlayer(question.getTarget());
+		if (player != null)
+			for (String line : formatQuestion(question, "New Question"))
+				player.sendMessage(line);
 	}
 	
 	public void sendErrorMsg(String msg) {
@@ -204,7 +218,7 @@ public class Questioner extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		String command = cmd.getName().toLowerCase();
-		if (command.equals("q")) {
+		if (command.equals("question")) {
 			if (args.length > 0) {
 				if (sender.isOp()) {
 					if (args[0].equalsIgnoreCase("target")) {
@@ -221,7 +235,7 @@ public class Questioner extends JavaPlugin {
 							}));
 							sender.sendMessage("NumOptions: " + currentOptions.size());
 						} else {
-							sender.sendMessage("help > que opt [option]");
+							sender.sendMessage("help > question opt [option]");
 						}
 						return true;
 					} else if (args[0].equalsIgnoreCase("ask")) {
@@ -229,10 +243,7 @@ public class Questioner extends JavaPlugin {
 							String q = StringMgmt.join(StringMgmt.remFirstArg(args), " ");
 							for (String target : currentTargets) {
 								Question question = new Question(target, q, currentOptions);
-								getQuestionManager().appendQuestion(question);
-								Player player = getServer().getPlayer(target);
-								if (player != null)
-									player.sendMessage(q);
+								appendQuestion(question);
 							}
 							currentOptions.clear();
 							currentTargets.clear();
@@ -282,9 +293,7 @@ public class Questioner extends JavaPlugin {
 				for (int i = start; i < start+questionsPerPage ; i++) {
 					try {
 						AbstractQuestion question = activePlayerQuestions.get(i);
-						out.add(String.format(questionFormat, i, StringMgmt.maxLength(question.getQuestion(), 54)));
-						for (Option option : question.getOptions())
-							out.add(String.format(optionFormat, option.toString()) + (option.hasDescription() ? String.format(optionEntendedFormat, option.getOptionDescription()) : ""));
+						out.addAll(formatQuestion(question, Integer.toString(i)));
 					} catch (IndexOutOfBoundsException e) {
 					}
 				}
@@ -295,5 +304,40 @@ public class Questioner extends JavaPlugin {
 			out.add(ChatColor.RED + e.getMessage());
 		}
 		return out;
+	}
+	
+	public List<String> formatQuestion(AbstractQuestion question, String tag) {
+		List<String> out = new ArrayList<String>();
+		out.add(String.format(questionFormat, tag, StringMgmt.maxLength(question.getQuestion(), 54)));
+		for (Option option : question.getOptions())
+			out.add(String.format(optionFormat, option.toString()) + (option.hasDescription() ? String.format(optionEntendedFormat, option.getOptionDescription()) : ""));
+		return out;
+	}
+	
+	public void loadClasses() {
+		final String[] classes = new String[] {
+			"ca.xshade.bukkit.questioner.BukkitQuestionTask",	
+				
+			"ca.xshade.questionmanager.AbstractQuestion",
+			"ca.xshade.questionmanager.InvalidOptionException",
+			"ca.xshade.questionmanager.LinkedQuestion",
+			"ca.xshade.questionmanager.LinkedQuestionTask",
+			"ca.xshade.questionmanager.Option",
+			"ca.xshade.questionmanager.OptionTask",
+			"ca.xshade.questionmanager.Poll",
+			"ca.xshade.questionmanager.PollQuestion",
+			"ca.xshade.questionmanager.PollTask",
+			"ca.xshade.questionmanager.Question",
+			"ca.xshade.questionmanager.QuestionFormatter",
+			"ca.xshade.questionmanager.QuestionManager",
+			"ca.xshade.questionmanager.QuestionTask"
+		};
+		
+		for (String c : classes)
+			try {
+				Questioner.class.getClassLoader().loadClass(c);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 	}
 }

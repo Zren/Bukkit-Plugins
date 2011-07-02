@@ -1,0 +1,11 @@
+name: Cinema
+main: ca.xshade.bukkit.cinema.Cinema
+version: 0.1
+author: Shade
+website: http://towny.xshade.ca
+description: ''
+commands:
+    detach:
+        description: ''
+    cinema:
+        description: ''

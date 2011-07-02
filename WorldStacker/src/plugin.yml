@@ -1,0 +1,6 @@
+name: WorldStacker
+main: ca.xshade.bukkit.worldstacker.WorldStacker
+version: 1.0
+author: Shade
+website: http://xshade.ca
+description: Going into the void or above sky level in a world teleports you to the next one in the stack.
